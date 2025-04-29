@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
+import { Button } from '@/app/components/ui/button';
+import { Card, CardContent } from '@/app/components/ui/card';
+import { Progress } from '@/app/components/ui/progress';
 import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/lib/store';
-import { Candidate, GameHistory, MatchupHistory, WinRate } from '@/lib/types';
+import { MatchupHistory, WinRate } from '@/lib/types';
 
 export default function GamePage() {
   const router = useRouter();
@@ -31,7 +31,6 @@ export default function GamePage() {
   // 페이지 로드 시 초기화
   useEffect(() => {
     if (candidates.length === 0) {
-      // 후보자가 없으면 카테고리 선택 페이지로 이동
       router.replace('/category');
       return;
     }

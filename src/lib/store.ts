@@ -8,6 +8,7 @@ interface GameStore {
   gameHistories: GameHistory[];
   currentRound: number;
   gameResult: GameResult | null;
+  roundChoice: number | null;
 
   // 액션
   setCategoryChoice: (category: CategoryChoice) => void;
@@ -16,6 +17,7 @@ interface GameStore {
   setCurrentRound: (round: number) => void;
   setGameResult: (result: GameResult) => void;
   resetGame: () => void;
+  setRoundChoice: (round: number) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -26,6 +28,7 @@ export const useGameStore = create<GameStore>()(
       gameHistories: [],
       currentRound: 0,
       gameResult: null,
+      roundChoice: null,
 
       // 액션
       setCategoryChoice: (category) => set({ categoryChoice: category }),
@@ -43,6 +46,7 @@ export const useGameStore = create<GameStore>()(
           currentRound: 0,
           gameResult: null,
         }),
+      setRoundChoice: (round) => set({ roundChoice: round }),
     }),
     {
       name: 'ideal-type-game-storage',

@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 
 export default function Home() {
   const [showLogo, setShowLogo] = useState(false);
@@ -24,21 +25,22 @@ export default function Home() {
 
   // 인트로 화면 렌더링
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen">
+    <div className="flex flex-col items-center justify-center min-h-screen  bg-gradient-to-br from-red-200 to-red-300">
       <AnimatePresence>
         {showLogo && (
           <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
-            transition={{ type: 'spring', duration: 1.5 }}
+            transition={{ type: 'spring', duration: 2 }}
             onClick={handleLogoClick}
             className="cursor-pointer"
           >
-            <div className="bg-white rounded-full p-8 shadow-2xl">
-              <img
-                src="/placeholder.svg?height=200&width=200"
-                alt="이상형 월드컵 로고"
-                className="w-32 h-32"
+            <div className="bg-white p-8 shadow-2xl">
+              <Image
+                src="/images/logo.png"
+                width={500}
+                height={500}
+                alt="로고 이미지"
               />
             </div>
             <motion.div

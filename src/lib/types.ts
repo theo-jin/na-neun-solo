@@ -35,3 +35,13 @@ export interface MatchupHistory {
   winnerId: number;
   loserId: number;
 }
+
+// 토너먼트 크기 선택 타입 추가
+export type RoundChoice = 32 | 16 | 8;
+
+// GameStore 인터페이스에 추가
+export interface GameStore {
+  // ... existing properties ...
+  roundChoice: RoundChoice | null;
+  setRoundChoice: (round: RoundChoice) => void;
+}
