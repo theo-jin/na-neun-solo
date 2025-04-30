@@ -51,6 +51,9 @@ export default function CategoryPage() {
   const goToIntro = () => {
     router.push('/');
   };
+  const goToList = () => {
+    router.push('/list');
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
@@ -155,7 +158,21 @@ export default function CategoryPage() {
           </div>
         </div>
       )}
-
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
+        className="mt-2"
+      >
+        <Button
+          variant="outline"
+          onClick={goToList}
+          className="hover:bg-gray-100"
+          disabled={loading}
+        >
+          출연진 둘러보기
+        </Button>
+      </motion.div>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}

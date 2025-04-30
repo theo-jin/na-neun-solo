@@ -10,7 +10,6 @@ interface GameStore {
   gameResult: GameResult | null;
   roundChoice: number | null;
 
-  // 액션
   setCategoryChoice: (category: CategoryChoice) => void;
   setCandidates: (candidates: Candidate[]) => void;
   addGameHistory: (history: GameHistory) => void;
@@ -30,7 +29,6 @@ export const useGameStore = create<GameStore>()(
       gameResult: null,
       roundChoice: null,
 
-      // 액션
       setCategoryChoice: (category) => set({ categoryChoice: category }),
       setCandidates: (candidates) => set({ candidates }),
       addGameHistory: (history) =>

@@ -9,7 +9,6 @@ export default function Home() {
   const [showLogo, setShowLogo] = useState(false);
   const router = useRouter();
 
-  // 인트로 애니메이션 후 로고 표시
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowLogo(true);
@@ -18,12 +17,10 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
-  // 로고 클릭 핸들러
   const handleLogoClick = () => {
     router.push('/category');
   };
 
-  // 인트로 화면 렌더링
   return (
     <div className="flex flex-col items-center justify-center min-h-screen  bg-gradient-to-br from-red-200 to-red-300">
       <AnimatePresence>
