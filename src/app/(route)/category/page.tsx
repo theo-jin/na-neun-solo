@@ -3,24 +3,49 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/app/components/ui/button';
-import { Card, CardContent } from '@/app/components/ui/card';
 import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/lib/store';
 import { generations, cast } from '@/lib/data';
-import { CategoryChoice, RoundChoice } from '@/lib/types';
+import { CategoryChoice, RoundChoice, GenderChoice } from '@/lib/types';
+import CategorySelection from '@/app/components/Category/CategorySelection';
+import GenderSelection from '@/app/components/Category/GenderSelection';
+import RoundSelection from '@/app/components/Category/RoundSelection';
 
 export default function CategoryPage() {
   const router = useRouter();
-  const { setCategoryChoice, setCandidates, resetGame, setRoundChoice } =
-    useGameStore();
+  const {
+    setCategoryChoice,
+    setCandidates,
+    resetGame,
+    setRoundChoice,
+    setGenderChoice,
+  } = useGameStore();
   const [loading, setLoading] = useState(false);
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryChoice | null>(null);
+  const [selectedGender, setSelectedGender] = useState<GenderChoice | null>(
+    null
+  );
   const [showRoundSelect, setShowRoundSelect] = useState(false);
+  const [showGenderSelect, setShowGenderSelect] = useState(false);
 
   // 카테고리 선택 핸들러
   const selectCategory = (category: CategoryChoice) => {
     setSelectedCategory(category);
+
+    if (category === 'cast') {
+      // 출연진 선택 시 성별 선택 화면 표시
+      setShowGenderSelect(true);
+    } else {
+      // 시즌 선택 시 바로 라운드 선택 화면으로
+      setShowRoundSelect(true);
+    }
+  };
+
+  // 성별 선택 핸들러
+  const selectGender = (gender: GenderChoice) => {
+    setSelectedGender(gender);
+    setShowGenderSelect(false);
     setShowRoundSelect(true);
   };
 
@@ -35,9 +60,21 @@ export default function CategoryPage() {
     setCategoryChoice(selectedCategory!);
     setRoundChoice(round);
 
+    // 성별 선택이 있는 경우 저장
+    if (selectedGender) {
+      setGenderChoice(selectedGender);
+    }
+
     // 후보자 데이터 준비
-    const allCandidates =
-      selectedCategory === 'generations' ? generations : cast;
+    let allCandidates = selectedCategory === 'generations' ? generations : cast;
+
+    // 출연진에서 성별 필터링
+    if (selectedCategory === 'cast' && selectedGender) {
+      allCandidates = allCandidates.filter(
+        (candidate) => candidate.gender === selectedGender
+      );
+    }
+
     const shuffled = [...allCandidates]
       .sort(() => Math.random() - 0.5)
       .slice(0, round);
@@ -51,8 +88,58 @@ export default function CategoryPage() {
   const goToIntro = () => {
     router.push('/');
   };
+
   const goToList = () => {
     router.push('/list');
+  };
+
+  const handleBack = () => {
+    if (showRoundSelect) {
+      if (selectedCategory === 'cast' && selectedGender) {
+        // 출연진 카테고리의 경우 라운드 선택에서 성별 선택으로 돌아감
+        setShowRoundSelect(false);
+        setShowGenderSelect(true);
+      } else {
+        // 시즌 카테고리나 성별 선택이 없는 경우 카테고리 선택으로 돌아감
+        setShowRoundSelect(false);
+        setShowGenderSelect(false);
+      }
+    } else if (showGenderSelect) {
+      // 성별 선택에서 카테고리 선택으로 돌아감
+      setShowGenderSelect(false);
+      setSelectedCategory(null);
+    }
+  };
+
+  // 렌더링할 컴포넌트 결정
+  const renderContent = () => {
+    if (!showGenderSelect && !showRoundSelect) {
+      return (
+        <CategorySelection
+          loading={loading}
+          onSelectCategory={selectCategory}
+          onGoToList={goToList}
+        />
+      );
+    } else if (showGenderSelect) {
+      return (
+        <GenderSelection
+          loading={loading}
+          onSelectGender={selectGender}
+          onBack={handleBack}
+        />
+      );
+    } else {
+      return (
+        <RoundSelection
+          loading={loading}
+          selectedCategory={selectedCategory!}
+          selectedGender={selectedGender}
+          onRoundSelect={handleRoundSelect}
+          onBack={handleBack}
+        />
+      );
+    }
   };
 
   return (
@@ -67,112 +154,8 @@ export default function CategoryPage() {
         <p className="text-gray-600">월드컵 주제를 선택해주세요</p>
       </motion.div>
 
-      {!showRoundSelect ? (
-        <div className="grid grid-cols-2 gap-5 w-full max-w-2xl px-4">
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="cursor-pointer"
-            onClick={() => !loading && selectCategory('generations')}
-          >
-            <Card className="overflow-hidden h-full bg-gradient-to-br from-blue-400 to-blue-500 border-0 shadow-xl">
-              <CardContent className="p-6 relative">
-                <h2 className="text-white text-3xl font-bold text-center">
-                  시즌
-                </h2>
-              </CardContent>
-            </Card>
-          </motion.div>
+      {renderContent()}
 
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="cursor-pointer"
-            onClick={() => !loading && selectCategory('cast')}
-          >
-            <Card className="overflow-hidden h-full  bg-gradient-to-br from-pink-400 to-pink-500 border-0 shadow-xl">
-              <CardContent className="p-6 relative ">
-                <h2 className="text-white text-3xl font-bold text-center">
-                  {' '}
-                  출연진
-                </h2>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </div>
-      ) : (
-        <div className="space-y-4 w-full max-w-2xl px-4">
-          <h2 className="text-2xl font-bold text-center mb-6">
-            {selectedCategory === 'generations' ? '기수' : '출연진'} 토너먼트
-            라운드 선택
-          </h2>
-
-          <div className="grid grid-cols-2 gap-4">
-            {selectedCategory === 'generations' ? (
-              <>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleRoundSelect(16)}
-                  className="w-full py-8 text-xl"
-                >
-                  16강
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleRoundSelect(8)}
-                  className="w-full py-8 text-xl"
-                >
-                  8강
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleRoundSelect(32)}
-                  className="w-full py-8 text-xl"
-                >
-                  32강
-                </Button>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => handleRoundSelect(16)}
-                  className="w-full py-8 text-xl"
-                >
-                  16강
-                </Button>
-              </>
-            )}
-
-            <Button
-              variant="outline"
-              onClick={() => setShowRoundSelect(false)}
-              className="col-span-2 w-full py-4"
-            >
-              뒤로 가기
-            </Button>
-          </div>
-        </div>
-      )}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="mt-2"
-      >
-        <Button
-          variant="outline"
-          onClick={goToList}
-          className="hover:bg-gray-100"
-          disabled={loading}
-        >
-          출연진 둘러보기
-        </Button>
-      </motion.div>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -182,7 +165,7 @@ export default function CategoryPage() {
         <Button
           variant="outline"
           onClick={goToIntro}
-          className="hover:bg-gray-100"
+          className="hover:bg-gray-100 cursor-pointer"
           disabled={loading}
         >
           처음으로 돌아가기

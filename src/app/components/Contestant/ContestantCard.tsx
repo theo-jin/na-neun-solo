@@ -4,7 +4,6 @@ import Image from 'next/image';
 import { Card, CardContent, CardTitle } from '../ui/card';
 
 export default function ContestandCrad({ contestant }: { contestant: any }) {
-    
   return (
     <Card className="hover:shadow-lg rounded-t-lg">
       <div className="flex justify-center items-center bg-gray-100 rounded-t-lg">

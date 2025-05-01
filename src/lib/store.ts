@@ -1,6 +1,12 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Candidate, CategoryChoice, GameHistory, GameResult } from './types';
+import {
+  Candidate,
+  CategoryChoice,
+  GameHistory,
+  GameResult,
+  GenderChoice,
+} from './types';
 
 interface GameStore {
   categoryChoice: CategoryChoice;
@@ -9,6 +15,7 @@ interface GameStore {
   currentRound: number;
   gameResult: GameResult | null;
   roundChoice: number | null;
+  genderChoice: GenderChoice | null;
 
   setCategoryChoice: (category: CategoryChoice) => void;
   setCandidates: (candidates: Candidate[]) => void;
@@ -17,6 +24,7 @@ interface GameStore {
   setGameResult: (result: GameResult) => void;
   resetGame: () => void;
   setRoundChoice: (round: number) => void;
+  setGenderChoice: (gender: GenderChoice) => void;
 }
 
 export const useGameStore = create<GameStore>()(
@@ -28,6 +36,7 @@ export const useGameStore = create<GameStore>()(
       currentRound: 0,
       gameResult: null,
       roundChoice: null,
+      genderChoice: null,
 
       setCategoryChoice: (category) => set({ categoryChoice: category }),
       setCandidates: (candidates) => set({ candidates }),
@@ -43,8 +52,10 @@ export const useGameStore = create<GameStore>()(
           gameHistories: [],
           currentRound: 0,
           gameResult: null,
+          genderChoice: null,
         }),
       setRoundChoice: (round) => set({ roundChoice: round }),
+      setGenderChoice: (gender) => set({ genderChoice: gender }),
     }),
     {
       name: 'ideal-type-game-storage',

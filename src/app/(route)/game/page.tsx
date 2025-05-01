@@ -8,6 +8,7 @@ import { Progress } from '@/app/components/ui/progress';
 import { useRouter } from 'next/navigation';
 import { useGameStore } from '@/lib/store';
 import { MatchupHistory, WinRate } from '@/lib/types';
+import ContestandCrad from '@/app/components/Contestant/ContestantCard';
 
 export default function GamePage() {
   const router = useRouter();
